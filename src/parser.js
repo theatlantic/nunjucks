@@ -1065,6 +1065,32 @@ var Parser = Object.extend({
         );
     },
 
+    parseSlice: function(start) {
+        var tok = this.nextToken();
+        var node;
+        if (start) {
+            node = new nodes.Slice(start.lineno, start.colno, start);
+        } else {
+            node = new nodes.Slice(tok.lineno, tok.colno);
+        }
+        var fieldIndex = 0;
+        while (1) {
+            fieldIndex++;
+            if (this.skip(lexer.TOKEN_RIGHT_BRACKET)) {
+                break;
+            }
+            if (fieldIndex > node.fields.length) {
+                this.fail('parseSlice: too many slice components', tok.lineno, tok.colno);
+            }
+            if (!this.skip(lexer.TOKEN_COLON)) {
+                var field = node.fields[fieldIndex];
+                node[field] = this.parseExpression();
+                this.skip(lexer.TOKEN_COLON);
+            }
+        }
+        return node;
+    },
+
     parseAggregate: function() {
         var tok = this.nextToken();
         var node;
@@ -1086,6 +1112,11 @@ var Parser = Object.extend({
                type === lexer.TOKEN_RIGHT_BRACKET ||
                type === lexer.TOKEN_RIGHT_CURLY) {
                 this.nextToken();
+                break;
+            }
+
+            if(node instanceof nodes.Array && type == lexer.TOKEN_COLON) {
+                node.children[0] = this.parseSlice(node.children[0]);
                 break;
             }
 

@@ -142,6 +142,15 @@ var Compare = Node.extend('Compare', { fields: ['expr', 'ops'] });
 var CompareOperand = Node.extend('CompareOperand', {
     fields: ['expr', 'type']
 });
+var Slice = Node.extend('Slice', {
+    fields: ['start', 'stop', 'step'],
+     init: function(lineno, colno, start, stop, step) {
+         start = start || new Literal(lineno, colno, 0);
+         stop = stop || new Literal(lineno, colno, Infinity);
+         step = step || new Literal(lineno, colno, 1);
+         this.parent(lineno, colno, start, stop, step);
+     }
+});
 
 var CallExtension = Node.extend('CallExtension', {
     fields: ['extName', 'prop', 'args', 'contentArgs'],
@@ -295,6 +304,7 @@ module.exports = {
     Pos: Pos,
     Compare: Compare,
     CompareOperand: CompareOperand,
+    Slice: Slice,
 
     CallExtension: CallExtension,
     CallExtensionAsync: CallExtensionAsync,

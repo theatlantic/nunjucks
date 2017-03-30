@@ -225,6 +225,9 @@ function ensureDefined(val, lineno, colno) {
 }
 
 function memberLookup(obj, val) {
+    if (arguments.length === 4) {
+        return sliceLookup.apply(this, arguments);
+    }
     obj = obj || {};
 
     if(typeof obj[val] === 'function') {
@@ -234,6 +237,18 @@ function memberLookup(obj, val) {
     }
 
     return obj[val];
+}
+
+function sliceLookup(obj, start, stop, step) {
+    obj = obj || [];
+    step = step || 1;
+    stop = Math.min(obj.length, stop || Infinity);
+    start = start || 0;
+    var results = [];
+    for (var i = start; i < stop; i += step) {
+        results.push(memberLookup(obj, i));
+    }
+    return results;
 }
 
 function callWrap(obj, name, context, args) {

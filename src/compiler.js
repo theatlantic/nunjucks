@@ -187,7 +187,8 @@ var Compiler = Object.extend({
             nodes.Neg,
             nodes.Pos,
             nodes.Compare,
-            nodes.NodeList
+            nodes.NodeList,
+            nodes.Slice
         );
         this.compile(node, frame);
     },
@@ -430,6 +431,16 @@ var Compiler = Object.extend({
         this._compileExpression(node.target, frame);
         this.emit('),');
         this._compileExpression(node.val, frame);
+        this.emit(')');
+    },
+
+    compileSlice: function(node, frame) {
+        this.emit('(');
+        this._compileExpression(node.start, frame);
+        this.emit('),(');
+        this._compileExpression(node.stop, frame);
+        this.emit('),(');
+        this._compileExpression(node.step, frame);
         this.emit(')');
     },
 
