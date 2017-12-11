@@ -53,6 +53,22 @@
             finish(done);
         });
 
+        it('should compile references - object without prototype', function(done) {
+          var context = Object.create(null);
+          context.foo = Object.create(null);
+          context.foo.bar = 'baz';
+          
+          equal('{{ foo.bar }}',
+            context,
+            'baz');
+
+          equal('{{ foo["bar"] }}',
+            context,
+            'baz');
+
+          finish(done);
+        });
+
         it('should fail silently on undefined values', function(done) {
             equal('{{ foo }}', '');
             equal('{{ foo.bar }}', '');
@@ -430,6 +446,11 @@
                   { foo: function(n) { return n - 1; },
                     bar: 15 },
                   'yes');
+
+            equal('{{ "yes" if 1 is odd else "no"  }}', 'yes');
+            equal('{{ "yes" if 2 is even else "no"  }}', 'yes');
+            equal('{{ "yes" if 2 is odd else "no"  }}', 'no');
+            equal('{{ "yes" if 1 is even else "no"  }}', 'no');
 
             equal('{% if 1 in [1, 2] %}yes{% endif %}', 'yes');
             equal('{% if 1 in [2, 3] %}yes{% endif %}', '');
