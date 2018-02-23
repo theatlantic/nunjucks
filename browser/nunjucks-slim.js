@@ -1,4 +1,4 @@
-/*! Browser bundle of nunjucks 3.1.0 (slim, only works with precompiled templates) */
+/*! Browser bundle of nunjucks 3.1.1 (slim, only works with precompiled templates) */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -1145,6 +1145,9 @@ module.exports = {
   nodes: nodes,
   installJinjaCompat: installJinjaCompat,
   configure: configure,
+  reset: function reset() {
+    e = undefined;
+  },
   compile: function compile(src, env, path, eagerCompile) {
     if (!e) {
       configure();
@@ -1454,21 +1457,28 @@ function (_Obj) {
       if (err) {
         if (cb) {
           cb(err);
+          return;
         } else {
           throw err;
         }
-      } else {
-        info = info || {
-          src: noopTmplSrc,
-          path: ''
-        };
-        var newTmpl = new Template(info.src, _this2, info.path, eagerCompile);
+      }
 
-        if (cb) {
-          cb(null, newTmpl);
-        } else {
-          syncResult = newTmpl;
+      var newTmpl;
+
+      if (!info) {
+        newTmpl = new Template(noopTmplSrc, _this2, '', eagerCompile);
+      } else {
+        newTmpl = new Template(info.src, _this2, info.path, eagerCompile);
+
+        if (!info.noCache) {
+          info.loader.cache[name] = newTmpl;
         }
+      }
+
+      if (cb) {
+        cb(null, newTmpl);
+      } else {
+        syncResult = newTmpl;
       }
     };
 
