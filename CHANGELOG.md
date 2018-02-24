@@ -1,7 +1,8 @@
 Changelog
 =========
 
-3.1.1 (Feb 23 2018)
+
+3.1.2 (Feb 23 2018)
 -------------------
 
 * Fix regression to make `chokidar` an optional dependency again. Fixes
